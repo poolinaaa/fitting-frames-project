@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import os
 
+
 def check_eye_spacing(image_path):
 
     if not os.path.exists(image_path):
@@ -32,27 +33,31 @@ def check_eye_spacing(image_path):
 
         # wspołrzędne landmarków
         height, width, _ = image.shape
-        left_eye_inner_coords = np.array([int(left_eye_inner.x * width), int(left_eye_inner.y * height)])
-        right_eye_inner_coords = np.array([int(right_eye_inner.x * width), int(right_eye_inner.y * height)])
-        left_eye_outer_coords = np.array([int(left_eye_outer.x * width), int(left_eye_outer.y * height)])
-        right_eye_outer_coords = np.array([int(right_eye_outer.x * width), int(right_eye_outer.y * height)])
+        left_eye_inner_coords = np.array(
+            [int(left_eye_inner.x * width), int(left_eye_inner.y * height)])
+        right_eye_inner_coords = np.array(
+            [int(right_eye_inner.x * width), int(right_eye_inner.y * height)])
+        left_eye_outer_coords = np.array(
+            [int(left_eye_outer.x * width), int(left_eye_outer.y * height)])
+        right_eye_outer_coords = np.array(
+            [int(right_eye_outer.x * width), int(right_eye_outer.y * height)])
 
         # wyliczanie średniej wielkości oczu i odległości między oczami
-        left_eye_width = np.linalg.norm(left_eye_outer_coords - left_eye_inner_coords)
-        right_eye_width = np.linalg.norm(right_eye_outer_coords - right_eye_inner_coords)
+        left_eye_width = np.linalg.norm(
+            left_eye_outer_coords - left_eye_inner_coords)
+        right_eye_width = np.linalg.norm(
+            right_eye_outer_coords - right_eye_inner_coords)
         avg_eye_width = (left_eye_width + right_eye_width) / 2
-        eye_distance = np.linalg.norm(left_eye_inner_coords - right_eye_inner_coords)
+        eye_distance = np.linalg.norm(
+            left_eye_inner_coords - right_eye_inner_coords)
 
-        # Klasyfikacja sprawdzająca jak się ma odległość między oczami do uśrednionej szerokości oczu
         ratio = eye_distance / avg_eye_width
         if ratio < 1:
-            classification = "Wąski rozstaw oczu"
+            classification = "narrow"
         elif ratio > 1.2:
-            classification = "Szeroki rozstaw oczu"
+            classification = "wide"
         else:
-            classification = "Zrównoważony rozstaw oczu"
+            classification = "balanced"
 
-        return {
-            "classification": classification
-        }
+        return classification
 
